@@ -142,6 +142,21 @@ class Usuario {
 
     }
 
+    public function delete(){
+
+        $sql = new Sql();
+        //não utiliza o * pois este se refere às colunas, que de qualquer forma já serão eliminadas
+        $sql->query("DELETE FROM tb_usuarios WHERE idusuario = :ID", array(
+            ':ID'=>$this->getIdusuario()
+        ));
+        //posso colocar tudo como null também
+        $this->setIdusuario(0);
+        $this->setDeslogin("");
+        $this->setDessenha("");
+        $this->setDtcadastro(new DateTime());
+
+    }
+
     //método construtor para objeto de instância da classe
     // o = "" serve para evitar erros: caso não for informado, retornará vazio, tornando-os parâmetros "não obrigatórios"
     public function __construct($login = "", $password = ""){

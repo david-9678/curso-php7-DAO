@@ -49,12 +49,7 @@ class Usuario {
         //verifica se o ID em questão existe e atribui o valor da colua aos setters
         if (count($results)>0){
 
-            $row = $results[0];
-
-            $this->setIdusuario($row['idusuario']);
-            $this->setDeslogin($row['deslogin']);
-            $this->setDessenha($row['dessenha']);
-            $this->setDtcadastro(new datetime($row['dtcadastro']));
+            $this->setData($results[0]);
 
         }
     }
@@ -87,18 +82,72 @@ class Usuario {
         ));
         if (count($results)>0){
 
-            $row = $results[0];
-
-            $this->setIdusuario($row['idusuario']);
-            $this->setDeslogin($row['deslogin']);
-            $this->setDessenha($row['dessenha']);
-            $this->setDtcadastro(new datetime($row['dtcadastro']));
+            $this->setData($results[0]);
 
         } else {
 
             throw new Exception("Login e/ou senha inválidos.");
 
         }
+
+    }
+
+    //função para receber dados da variável
+    public function setData($data){
+
+        $this->setIdusuario($data['idusuario']);
+        $this->setDeslogin($data['deslogin']);
+        $this->setDessenha($data['dessenha']);
+        $this->setDtcadastro(new datetime($data['dtcadastro']));
+
+    }
+
+    //criar um usuário novo a partir da classe de usuários
+    public function insert(){
+
+        $sql = new Sql();
+
+        //sp_nomeDaTabela_oQueElaFaz
+        //sp = Storage Procedure
+        //select informa qual id foi selecionado na tabela
+        //CALL para MySql, para Sqlserver EXECUTE
+        //para tornar dinâmico, criar variável com switch
+        //CONVENÇÃO para nomes no banco de dados:
+        //v = variables;
+        //p = parameters
+        //sem prefixos: subentende-se que se trata do nome do campo da coluna da tabela
+        $results = $sql->select("CALL sp_usuarios_insert(:LOGIN, :PASSWORD)", array(
+            ':LOGIN'=>$this->getDeslogin(),
+            ':PASSWORD'=>$this->getDessenha()
+        ));
+
+        if (count($results)>0) {
+            $this->setData($results[0]);
+        }
+
+    }
+
+    public function update($login, $password){
+
+        $this->setDeslogin($login);
+        $this->setDessenha($password);
+
+        $sql = new Sql();
+
+        $sql->query("UPDATE tb_usuarios SET deslogin = :LOGIN, dessenha = :PASSWORD WHERE idusuario = :ID", array(
+            ':LOGIN'=>$this->getDeslogin(),
+            ':PASSWORD'=>$this->getDessenha(),
+            ':ID'=>$this->getIdusuario()
+        ));
+
+    }
+
+    //método construtor para objeto de instância da classe
+    // o = "" serve para evitar erros: caso não for informado, retornará vazio, tornando-os parâmetros "não obrigatórios"
+    public function __construct($login = "", $password = ""){
+
+        $this->setDeslogin($login);
+        $this->setDessenha($password);
 
     }
 

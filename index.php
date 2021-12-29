@@ -32,8 +32,34 @@ $search = Usuario::search("jo");
 echo json_encode($search);
 */
 
+/*
+//carrega o usuário usando o login e a senha
 $usuario = new Usuario();
 $usuario->login("root", "!@#$%");
+
+echo $usuario;
+*/
+
+/*
+//criando um novo usuário
+$aluno = new Usuario("aluno", "@lun0");
+
+
+//trecho desnecessário, pois os parâmetros de login serão //passados por método construtor
+//$aluno->setDeslogin("aluno");
+//$aluno->setDessenha("@lun0");
+
+
+$aluno->insert();
+
+echo $aluno;
+*/
+
+$usuario = new Usuario();
+
+$usuario->loadById(8);
+
+$usuario->update("professor", "!@#$%¨&*");
 
 echo $usuario;
 

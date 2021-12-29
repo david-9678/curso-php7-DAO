@@ -58,6 +58,50 @@ class Usuario {
 
         }
     }
+
+    //cria lista com todos os usuarios que estão na tabela
+    //função pode ser estática porque não utiliza a pseudo-variável $this, portanto não precisa ser instanciada
+    public static function getList(){
+        $sql = new Sql();
+
+        return $sql->select("SELECT * FROM tb_usuarios ORDER BY deslogin;");
+    }
+
+    public static function search($login){
+
+        $sql = new Sql();
+
+        return $sql->select("SELECT * FROM tb_usuarios WHERE deslogin LIKE :SEARCH ORDER BY deslogin", array(
+            ':SEARCH'=>"%".$login."%" 
+        ));
+
+    }
+
+    //função que verifica login e senha para exibir json
+    public function login($login, $password){
+
+        $sql = new Sql();
+        $results = $sql->select("SELECT * FROM tb_usuarios WHERE deslogin = :LOGIN AND dessenha = :PASSWORD", array(
+            ":LOGIN"=>$login,
+            ":PASSWORD"=>$password
+        ));
+        if (count($results)>0){
+
+            $row = $results[0];
+
+            $this->setIdusuario($row['idusuario']);
+            $this->setDeslogin($row['deslogin']);
+            $this->setDessenha($row['dessenha']);
+            $this->setDtcadastro(new datetime($row['dtcadastro']));
+
+        } else {
+
+            throw new Exception("Login e/ou senha inválidos.");
+
+        }
+
+    }
+
     //método construtor que exibe (echo) uma string (json) com os nomes dos campos
     public function __toString(){
         //retorna os valores com os getters
